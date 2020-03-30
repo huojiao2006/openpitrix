@@ -1592,6 +1592,17 @@ var Files = map[string]string{
               "type": "string"
             },
             "collectionFormat": "multi"
+          },
+          {
+            "name": "isv",
+            "description": "isv.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
           }
         ],
         "tags": [
@@ -1672,6 +1683,33 @@ var Files = map[string]string{
             "required": true,
             "schema": {
               "$ref": "#/definitions/openpitrixDeleteAppVersionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AppManager"
+        ]
+      }
+    },
+    "/v1/app_version/action/pass/admin": {
+      "post": {
+        "summary": "Operator of admin pass version of the app",
+        "operationId": "AdminPassAppVersion",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/openpitrixPassAppVersionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/openpitrixPassAppVersionRequest"
             }
           }
         ],
@@ -1780,6 +1818,33 @@ var Files = map[string]string{
             "required": true,
             "schema": {
               "$ref": "#/definitions/openpitrixRecoverAppVersionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AppManager"
+        ]
+      }
+    },
+    "/v1/app_version/action/reject/admin": {
+      "post": {
+        "summary": "Operator of Admin reject version of the app",
+        "operationId": "AdminRejectAppVersion",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/openpitrixRejectAppVersionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/openpitrixRejectAppVersionRequest"
             }
           }
         ],
@@ -2232,7 +2297,7 @@ var Files = map[string]string{
         "parameters": [
           {
             "name": "search_word",
-            "description": "query key, support these fields(review_id, version_id, app_id, status, reviewer).",
+            "description": "query key, support these fields(review_id, version_id, app_id, status, reviewer, app_name, owner).",
             "in": "query",
             "required": false,
             "type": "string"
@@ -2677,6 +2742,17 @@ var Files = map[string]string{
           {
             "name": "display_columns",
             "description": "select column to display.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "isv",
+            "description": "isv.",
             "in": "query",
             "required": false,
             "type": "array",
@@ -5704,6 +5780,17 @@ var Files = map[string]string{
               "type": "string"
             },
             "collectionFormat": "multi"
+          },
+          {
+            "name": "runtime_credential_id",
+            "description": "runtime credential id.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
           }
         ],
         "tags": [
@@ -5971,6 +6058,17 @@ var Files = map[string]string{
           {
             "name": "owner",
             "description": "owner.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "runtime_credential_id",
+            "description": "runtime credential id.",
             "in": "query",
             "required": false,
             "type": "array",
@@ -7984,6 +8082,17 @@ var Files = map[string]string{
           "type": "string",
           "format": "byte",
           "title": "app icon"
+        },
+        "isv": {
+          "type": "string",
+          "title": "isv"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "categories"
         }
       }
     },
@@ -8552,6 +8661,14 @@ var Files = map[string]string{
         "version_name": {
           "type": "string",
           "title": "app version name.eg.[0.1.0]"
+        },
+        "url": {
+          "type": "string",
+          "title": "app url"
+        },
+        "description": {
+          "type": "string",
+          "title": "app description"
         }
       }
     },
@@ -8753,6 +8870,11 @@ var Files = map[string]string{
             "type": "string"
           },
           "title": "required, ids of category to delete"
+        },
+        "force": {
+          "type": "boolean",
+          "format": "boolean",
+          "title": "if true force delete category"
         }
       }
     },
@@ -8908,6 +9030,16 @@ var Files = map[string]string{
             "type": "string"
           },
           "title": "advanced param"
+        },
+        "force": {
+          "type": "boolean",
+          "format": "boolean",
+          "title": "whether force delete clusters or not"
+        },
+        "grace_period": {
+          "type": "integer",
+          "format": "int64",
+          "title": "timeout(s), when delete clusters"
         }
       }
     },
@@ -9555,6 +9687,16 @@ var Files = map[string]string{
             "type": "string"
           },
           "title": "advanced param"
+        },
+        "force": {
+          "type": "boolean",
+          "format": "boolean",
+          "title": "whether force delete clusters or not"
+        },
+        "grace_period": {
+          "type": "integer",
+          "format": "int64",
+          "title": "timeout(s), when delete clusters"
         }
       }
     },
@@ -10204,11 +10346,6 @@ var Files = map[string]string{
           "title": "job id"
         }
       }
-    },
-    "protobufEmpty": {
-      "type": "object",
-      "description": "service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for ` + "`" + `Empty` + "`" + ` is empty JSON object ` + "`" + `{}` + "`" + `.",
-      "title": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:"
     },
     "openpitrixDescribeVendorStatisticsResponse": {
       "type": "object",
@@ -11279,6 +11416,16 @@ var Files = map[string]string{
             "type": "string"
           },
           "title": "required, ids of runtime to delete"
+        },
+        "force": {
+          "type": "boolean",
+          "format": "boolean",
+          "title": "whether force delete runtime or not"
+        },
+        "grace_period": {
+          "type": "integer",
+          "format": "int64",
+          "title": "timeout(s), when delete runtime"
         }
       }
     },

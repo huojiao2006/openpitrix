@@ -74,10 +74,14 @@ func checkAppVersionHandlePermission(ctx context.Context, action Action, version
 }
 
 func checkModifyAppPermission(ctx context.Context, app *models.App) error {
+	var count uint32
+	var err error
+
 	if app.Status == constants.StatusDeleted {
 		return gerr.New(ctx, gerr.FailedPrecondition, gerr.ErrorResourceAlreadyDeleted, app.AppId)
 	}
-	count, err := pi.Global().DB(ctx).
+
+	count, err = pi.Global().DB(ctx).
 		Select("").
 		From(constants.TableAppVersion).
 		Where(db.Eq(constants.ColumnAppId, app.AppId)).
@@ -622,27 +626,57 @@ func getAppsVersionTypes(ctx context.Context, appIds []string, active bool) (map
 }
 
 func resortAppVersions(ctx context.Context, appId string) error {
-	var versions models.AppVersions
-	_, err := pi.Global().DB(ctx).
-		Select(constants.ColumnVersionId, constants.ColumnName, constants.ColumnSequence, constants.ColumnCreateTime).
-		From(constants.TableAppVersion).
-		Where(db.Eq(constants.ColumnActive, false)).
-		Where(db.Eq(constants.ColumnAppId, appId)).
-		Where(db.Neq(constants.ColumnStatus, constants.StatusDeleted)).
-		Load(&versions)
-	if err != nil {
-		return gerr.NewWithDetail(ctx, gerr.Internal, err, gerr.ErrorDescribeResourceFailed, appId)
+	queryFunc := func(active bool) (versions models.AppVersions, err error) {
+		_, err = pi.Global().DB(ctx).
+			Select(
+				constants.ColumnVersionId, constants.ColumnName,
+				constants.ColumnSequence, constants.ColumnCreateTime,
+				constants.ColumnActive,
+			).
+			From(constants.TableAppVersion).
+			Where(db.Eq(constants.ColumnActive, active)).
+			Where(db.Eq(constants.ColumnAppId, appId)).
+			Where(db.Neq(constants.ColumnStatus, constants.StatusDeleted)).
+			Load(&versions)
+		return
 	}
-	sort.Sort(versions)
-	for i, version := range versions {
-		if version.Sequence != uint32(i) {
-			err = updateVersion(ctx, version.VersionId, map[string]interface{}{
-				constants.ColumnSequence: i,
-			})
-			if err != nil {
-				return err
+
+	sortFunc := func(versions models.AppVersions) error {
+		sort.Sort(versions)
+		for i, version := range versions {
+			if version.Sequence != uint32(i) {
+				_, err := pi.Global().DB(ctx).
+					Update(constants.TableAppVersion).
+					Set(constants.ColumnSequence, i).
+					Set(constants.ColumnUpdateTime, time.Now()).
+					Where(db.Eq(constants.ColumnVersionId, version.VersionId)).
+					Where(db.Eq(constants.ColumnActive, version.Active)).
+					Exec()
+				if err != nil {
+					return err
+				}
 			}
 		}
+		return nil
+	}
+
+	var versions models.AppVersions
+	var err error
+	versions, err = queryFunc(false)
+	if err != nil {
+		return err
+	}
+	err = sortFunc(versions)
+	if err != nil {
+		return err
+	}
+	versions, err = queryFunc(true)
+	if err != nil {
+		return err
+	}
+	err = sortFunc(versions)
+	if err != nil {
+		return err
 	}
 	return nil
 }

@@ -16,8 +16,14 @@ import (
 // swagger:model openpitrixCreateAppRequest
 type OpenpitrixCreateAppRequest struct {
 
+	// categories
+	Categories []string `json:"categories"`
+
 	// app icon
 	Icon strfmt.Base64 `json:"icon,omitempty"`
+
+	// isv
+	Isv string `json:"isv,omitempty"`
 
 	// required, app name
 	Name string `json:"name,omitempty"`
@@ -36,9 +42,23 @@ type OpenpitrixCreateAppRequest struct {
 func (m *OpenpitrixCreateAppRequest) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateCategories(formats); err != nil {
+		// prop
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *OpenpitrixCreateAppRequest) validateCategories(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Categories) { // not required
+		return nil
+	}
+
 	return nil
 }
 

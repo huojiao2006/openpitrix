@@ -103,6 +103,7 @@ const (
 	ColumnRejectMessage            = "reject_message"
 	ColumnSubmitTime               = "submit_time"
 	ColumnApprover                 = "approver"
+	ColumnIsv                      = "isv"
 )
 
 var PushEventTables = map[string][]string{
@@ -125,7 +126,7 @@ var IndexedColumns = map[string][]string{
 	TableApp: {
 		ColumnAppId, ColumnName, ColumnRepoId, ColumnDescription, ColumnStatus,
 		ColumnHome, ColumnIcon, ColumnScreenshots, ColumnMaintainers, ColumnSources,
-		ColumnReadme, ColumnOwner, ColumnChartName,
+		ColumnReadme, ColumnOwner, ColumnChartName, ColumnIsv,
 	},
 	TableAppVersion: {
 		ColumnVersionId, ColumnAppId, ColumnName, ColumnOwner, ColumnDescription,
@@ -143,7 +144,7 @@ var IndexedColumns = map[string][]string{
 		ColumnAppDefaultStatus, ColumnOwner, ColumnController,
 	},
 	TableRuntime: {
-		ColumnRuntimeId, ColumnProvider, ColumnZone, ColumnStatus, ColumnOwner,
+		ColumnRuntimeId, ColumnProvider, ColumnZone, ColumnStatus, ColumnOwner, ColumnRuntimeCredentialId,
 	},
 	TableRuntimeCredential: {
 		ColumnRuntimeCredentialId, ColumnStatus, ColumnProvider, ColumnOwner,
@@ -192,6 +193,7 @@ var SearchWordColumnTable = []string{
 	TableRuntimeCredential,
 	TableApp,
 	TableAppVersion,
+	TableAppVersionReview,
 	TableRepo,
 	TableJob,
 	TableTask,
@@ -208,6 +210,15 @@ var SearchColumns = map[string][]string{
 	},
 	TableAppVersion: {
 		ColumnVersionId, ColumnAppId, ColumnName, ColumnDescription, ColumnOwner, ColumnPackageName,
+	},
+	TableAppVersionReview: {
+		TableAppVersionReview + "." + ColumnReviewId,
+		TableAppVersionReview + "." + ColumnVersionId,
+		TableAppVersionReview + "." + ColumnAppId,
+		TableAppVersionReview + "." + ColumnOwner,
+		"app.name",
+		"app_version.name",
+		"app.isv",
 	},
 	TableJob: {
 		ColumnJobId, ColumnClusterId, ColumnOwner, ColumnJobAction, ColumnExecutor, ColumnProvider, ColumnExecutor, ColumnProvider,

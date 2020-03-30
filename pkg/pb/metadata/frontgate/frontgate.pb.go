@@ -4,23 +4,22 @@
 package pbfrontgate
 
 import (
+	"bufio"
+	"crypto/tls"
+	"errors"
 	fmt "fmt"
+	"io"
+	"log"
 	math "math"
+	"net"
+	"net/http"
+	"net/rpc"
+	"time"
 
 	proto "github.com/golang/protobuf/proto"
 
 	types "openpitrix.io/openpitrix/pkg/pb/metadata/types"
 )
-
-import "bufio"
-import "crypto/tls"
-import "errors"
-import "io"
-import "log"
-import "net"
-import "net/http"
-import "net/rpc"
-import "time"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -31,7 +30,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type Config struct {
 	Id                   string                   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`

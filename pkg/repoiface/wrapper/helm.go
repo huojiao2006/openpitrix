@@ -6,9 +6,9 @@ package wrapper
 
 import (
 	"fmt"
-	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"k8s.io/helm/pkg/repo"
 
@@ -19,9 +19,10 @@ type HelmVersionWrapper struct {
 	*repo.ChartVersion
 }
 
-func (h HelmVersionWrapper) GetVersion() string     { return h.ChartVersion.GetVersion() }
-func (h HelmVersionWrapper) GetAppVersion() string  { return h.ChartVersion.GetAppVersion() }
-func (h HelmVersionWrapper) GetDescription() string { return h.ChartVersion.GetDescription() }
+func (h HelmVersionWrapper) GetVersion() string       { return h.ChartVersion.GetVersion() }
+func (h HelmVersionWrapper) GetAppVersion() string    { return h.ChartVersion.GetAppVersion() }
+func (h HelmVersionWrapper) GetDescription() string   { return h.ChartVersion.GetDescription() }
+func (h HelmVersionWrapper) GetCreateTime() time.Time { return h.ChartVersion.Created }
 func (h HelmVersionWrapper) GetUrls() string {
 	if len(h.ChartVersion.URLs) == 0 {
 		return ""
@@ -60,7 +61,7 @@ func (h HelmVersionWrapper) GetVersionName() string {
 }
 
 func (h HelmVersionWrapper) GetPackageName() string {
-	_, file := filepath.Split(h.GetUrls())
+	file := h.GetUrls()
 	if len(file) == 0 {
 		return fmt.Sprintf("%s-%s.tgz", h.Name, h.Version)
 	}
